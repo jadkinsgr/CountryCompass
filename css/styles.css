@@ -266,6 +266,9 @@ svg { stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; 
   color: var(--text-2); font-weight: 500;
 }
 .select-wrap select { border: 0; background: transparent; height: 100%; color: var(--text); font-weight: 500; cursor: pointer; max-width: 200px; }
+/* the native dropdown list ignores the select's transparent background, so theme it explicitly */
+.select-wrap select option { background: var(--surface); color: var(--text); font-weight: 400; }
+.select-wrap select optgroup { background: var(--surface-2); color: var(--accent); font-weight: 700; font-style: normal; }
 
 .legend {
   position: absolute; left: 14px; bottom: 14px; z-index: 5;
