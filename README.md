@@ -4,7 +4,9 @@ A practice project that recreates a "find where to live" county explorer. It sho
 
 Vanilla HTML/CSS/JS with [D3](https://d3js.org) and [us-atlas](https://github.com/topojson/us-atlas) county shapes. There is no build step.
 
-## Run it
+**Live site:** https://jadkinsgr.github.io/MoveMap/
+
+## Run it locally
 
 ```bash
 python -m http.server 8000
@@ -12,6 +14,12 @@ python -m http.server 8000
 ```
 
 The page loads `data/counties.json` with `fetch`, so opening `index.html` straight from disk won't work. You need a local server.
+
+## Deployment
+
+GitHub Pages serves the site straight from the root of the `main` branch (Settings → Pages → *Deploy from a branch* → `main` / `/ (root)`), the same setup as ProjectPortfolio. There is no build step: push to `main` and Pages republishes in a minute or two. `.nojekyll` tells Pages to serve the files as-is. All paths are relative, so the site works under the `/MoveMap/` subpath.
+
+After rebuilding the data, commit the updated `data/counties.json`. The site reads that file directly.
 
 ## Features
 
