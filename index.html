@@ -5,10 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Country Compass — Find Where to Live</title>
   <meta name="description" content="Filter every US county by cost of living, climate, demographics, economy, health, laws and natural hazards." />
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path fill='%230f9f8f' d='M12 2a7 7 0 0 0-7 7c0 5.2 7 13 7 13s7-7.8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z'/></svg>" />
+  <meta name="theme-color" content="#070c11" />
+  <!-- Data Lab mark (same as midatalab.net) -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'%3E%3Crect width='120' height='120' rx='28' fill='%23070c11'/%3E%3Cg stroke='%231ed760' stroke-width='7' stroke-linecap='round' fill='none'%3E%3Cline x1='68' y1='46.1' x2='81.5' y2='22.8'/%3E%3Cline x1='49.9' y1='47.6' x2='39' y2='34.2'/%3E%3Cline x1='75.9' y1='61.3' x2='100' y2='63.3'/%3E%3Cline x1='47.3' y1='69.7' x2='32.4' y2='81.1'/%3E%3Cline x1='61.4' y1='75.9' x2='63.3' y2='98'/%3E%3C/g%3E%3Ccircle cx='60' cy='60' r='16' stroke='%231ed760' stroke-width='7' fill='none'/%3E%3Ccircle cx='86' cy='15' r='9' stroke='%231ed760' stroke-width='7' fill='none'/%3E%3Ccircle cx='34' cy='28' r='8' stroke='%231ed760' stroke-width='7' fill='none'/%3E%3Ccircle cx='108' cy='64' r='8' stroke='%231ed760' stroke-width='7' fill='none'/%3E%3Ccircle cx='26' cy='86' r='8' stroke='%231ed760' stroke-width='7' fill='none'/%3E%3Ccircle cx='64' cy='106' r='8' stroke='%231ed760' stroke-width='7' fill='none'/%3E%3C/svg%3E" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/styles.css" />
 </head>
 <body>
@@ -16,11 +18,32 @@
     <button class="icon-btn only-mobile" id="open-filters" aria-label="Open filters" aria-controls="sidebar" aria-expanded="false">
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5h18M6 12h12M10 19h4" /></svg>
     </button>
-    <a class="brand" href="./">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a7 7 0 0 0-7 7c0 5.2 7 13 7 13s7-7.8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z" /></svg>
-      <span>Country Compass</span>
-    </a>
-    <a class="tagline hide-mobile" href="https://midatalab.net/" target="_blank" rel="noopener">by The Data Lab</a>
+    <div class="brand">
+      <a class="brand-logo" href="https://midatalab.net/" target="_blank" rel="noopener" aria-label="Data Lab (opens midatalab.net)">
+        <svg viewBox="0 0 120 120" aria-hidden="true">
+          <defs><linearGradient id="dlMark" x1="10" y1="10" x2="110" y2="110" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#6EE7A0" /><stop offset="1" stop-color="#C4F135" /></linearGradient></defs>
+          <g stroke="url(#dlMark)" stroke-width="6" stroke-linecap="round">
+            <line x1="68" y1="46.1" x2="81.5" y2="22.8" />
+            <line x1="49.9" y1="47.6" x2="39" y2="34.2" />
+            <line x1="75.9" y1="61.3" x2="100" y2="63.3" />
+            <line x1="47.3" y1="69.7" x2="32.4" y2="81.1" />
+            <line x1="61.4" y1="75.9" x2="63.3" y2="98" />
+          </g>
+          <g stroke="url(#dlMark)" stroke-width="6" fill="none">
+            <circle cx="60" cy="60" r="16" />
+            <circle cx="86" cy="15" r="9" />
+            <circle cx="34" cy="28" r="8" />
+            <circle cx="108" cy="64" r="8" />
+            <circle cx="26" cy="86" r="8" />
+            <circle cx="64" cy="106" r="8" />
+          </g>
+        </svg>
+      </a>
+      <div class="brand-text">
+        <a class="brand-name" href="./">Country Compass</a>
+        <a class="brand-by" href="https://midatalab.net/" target="_blank" rel="noopener">by Data Lab</a>
+      </div>
+    </div>
     <div class="topbar-actions">
       <label class="toggle" title="Show only your favorite counties">
         <input type="checkbox" id="fav-only" />
@@ -42,7 +65,7 @@
       <div class="match-card">
         <div>
           <div class="match-count"><span id="match-count">—</span></div>
-          <div class="match-label">of <span id="total-count">—</span> counties match your criteria</div>
+          <div class="match-label">of <span id="total-count">—</span> counties match</div>
         </div>
         <button class="btn ghost small" id="reset-btn" disabled>Reset</button>
       </div>

@@ -4,7 +4,10 @@ import { buildDomains, createFilterPanel, isActive, passes, positionOf, HIST_BIN
 import { createMap } from "./map.js";
 
 const $ = (id) => document.getElementById(id);
-const RAMP = ["#d4f1ec", "#a6e2d9", "#72cfc1", "#3fb8a8", "#16998b", "#0b776d", "#06544e"];
+// Data Lab ramp: deep green -> brand green (#1ed760) -> lime (#C4F135); low values recede into the dark map.
+const RAMP_DARK = ["#0f3a24", "#145a33", "#187d43", "#1ba653", "#1ed760", "#7fe67a", "#c4f135"];
+const RAMP_LIGHT = ["#e3f7e9", "#bdeccb", "#8ddca5", "#52c77a", "#1ea851", "#13823d", "#0a5a29"];
+const ramp = () => (document.documentElement.dataset.theme === "light" ? RAMP_LIGHT : RAMP_DARK);
 const RESULTS_LIMIT = 300;
 const TOOLTIP_KEYS = { rent: ["rent", "hh_income", "summer_high", "winter_high"], buy: ["home_value", "hh_income", "summer_high", "winter_high"] };
 
@@ -119,9 +122,9 @@ function colorScale() {
   const id = state.colorBy;
   if (!scaleCache[id]) {
     const vals = data.records.map((r) => r[id]).filter((v) => typeof v === "number");
-    scaleCache[id] = d3.scaleQuantile().domain(vals).range(RAMP);
+    scaleCache[id] = d3.scaleQuantile().domain(vals);
   }
-  const scale = scaleCache[id];
+  const scale = scaleCache[id].range(ramp());
   return (rec) => (typeof rec[id] === "number" ? scale(rec[id]) : null);
 }
 
@@ -139,7 +142,7 @@ function renderLegend() {
   const fmt = (v) => formatValue(f, v);
   const vals = data.records.map((r) => r[f.id]).filter((v) => typeof v === "number");
   el.innerHTML = `<div class="legend-title">${f.label}</div>
-    <div class="legend-bar">${RAMP.map((c) => `<span style="background:${c}"></span>`).join("")}</div>
+    <div class="legend-bar">${ramp().map((c) => `<span style="background:${c}"></span>`).join("")}</div>
     <div class="legend-ticks"><span>${fmt(d3.min(vals))}</span><span>${fmt(q[Math.floor(q.length / 2)])}</span><span>${fmt(d3.max(vals))}</span></div>
     <div class="legend-keys"><span><i style="background:var(--nomatch)"></i>Filtered out</span><span><i style="background:var(--nodata)"></i>No data</span></div>`;
 }
@@ -374,13 +377,13 @@ function wireUI() {
 function initTheme() {
   let saved = null;
   try { saved = localStorage.getItem("compass:theme"); } catch { /* ignore */ }
-  if (saved) document.documentElement.dataset.theme = saved;
+  // Data Lab dark is the default; light only when the visitor picks it.
+  document.documentElement.dataset.theme = saved === "light" ? "light" : "dark";
   $("theme-btn").addEventListener("click", () => {
-    const cur = document.documentElement.dataset.theme
-      || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
-    const next = cur === "dark" ? "light" : "dark";
+    const next = document.documentElement.dataset.theme === "light" ? "dark" : "light";
     document.documentElement.dataset.theme = next;
     try { localStorage.setItem("compass:theme", next); } catch { /* ignore */ }
+    if (data) update(); // re-color the choropleth with the theme's ramp
   });
 }
 
