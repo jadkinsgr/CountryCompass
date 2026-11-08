@@ -4,7 +4,7 @@ A practice project that builds a "find where to live" county explorer. It shows 
 
 Vanilla HTML/CSS/JS with [D3](https://d3js.org) and [us-atlas](https://github.com/topojson/us-atlas) county shapes. There is no build step.
 
-**Live site:** https://jadkinsgr.github.io/MoveMap/
+**Live site:** https://jadkinsgr.github.io/CountryCompass/
 
 ## Run it locally
 
@@ -17,7 +17,7 @@ The page loads `data/counties.json` with `fetch`, so opening `index.html` straig
 
 ## Deployment
 
-GitHub Pages serves the site straight from the root of the `main` branch (Settings → Pages → *Deploy from a branch* → `main` / `/ (root)`), the same setup as ProjectPortfolio. There is no build step: push to `main` and Pages republishes in a minute or two. `.nojekyll` tells Pages to serve the files as-is. All paths are relative, so the site works under the `/MoveMap/` subpath.
+GitHub Pages serves the site straight from the root of the `main` branch (Settings → Pages → *Deploy from a branch* → `main` / `/ (root)`), the same setup as ProjectPortfolio. There is no build step: push to `main` and Pages republishes in a minute or two. `.nojekyll` tells Pages to serve the files as-is. All paths are relative, so the site works under the `/CountryCompass/` subpath.
 
 After rebuilding the data, commit the updated `data/counties.json`. The site reads that file directly.
 
