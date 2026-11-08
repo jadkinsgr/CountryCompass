@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>MoveMap — Find Where to Live</title>
+  <meta name="description" content="Filter every US county by cost of living, climate, demographics, economy, health, laws and natural hazards." />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path fill='%230f9f8f' d='M12 2a7 7 0 0 0-7 7c0 5.2 7 13 7 13s7-7.8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z'/></svg>" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <button class="icon-btn only-mobile" id="open-filters" aria-label="Open filters" aria-controls="sidebar" aria-expanded="false">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5h18M6 12h12M10 19h4" /></svg>
+    </button>
+    <a class="brand" href="./">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a7 7 0 0 0-7 7c0 5.2 7 13 7 13s7-7.8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z" /></svg>
+      <span>MoveMap</span>
+    </a>
+    <span class="tagline hide-mobile">Find where to live</span>
+    <div class="topbar-actions">
+      <label class="toggle" title="Show only your favorite counties">
+        <input type="checkbox" id="fav-only" />
+        <span class="toggle-track"><span class="toggle-thumb"></span></span>
+        <span class="toggle-label">♥ <span class="hide-mobile">Favorites only</span> <span id="fav-count" class="pill">0</span></span>
+      </label>
+      <button class="btn ghost" id="share-btn" title="Copy a link to this exact view">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 14a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1M14 10a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1" /></svg>
+        <span class="hide-mobile">Share</span>
+      </button>
+      <button class="icon-btn" id="theme-btn" aria-label="Toggle dark mode">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z" /></svg>
+      </button>
+    </div>
+  </header>
+
+  <div class="layout">
+    <aside class="sidebar" id="sidebar" aria-label="Filters">
+      <div class="match-card">
+        <div>
+          <div class="match-count"><span id="match-count">—</span></div>
+          <div class="match-label">of <span id="total-count">—</span> counties match your criteria</div>
+        </div>
+        <button class="btn ghost small" id="reset-btn" disabled>Reset</button>
+      </div>
+      <div class="sidebar-scroll" id="filters"></div>
+      <div class="sidebar-footer only-mobile">
+        <button class="btn primary block" id="close-filters">Show <span id="match-count-mobile">—</span> counties</button>
+      </div>
+    </aside>
+    <div class="scrim" id="scrim" hidden></div>
+
+    <main class="map-area">
+      <div class="map-toolbar">
+        <label class="select-wrap">
+          <span>Color by</span>
+          <select id="color-by"><option value="">Match only</option></select>
+        </label>
+        <button class="btn" id="results-btn" aria-expanded="false" aria-controls="results">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01" /></svg>
+          Results
+        </button>
+        <button class="btn" id="csv-btn">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0-4-4m4 4 4-4M4 17v3h16v-3" /></svg>
+          <span class="hide-mobile">Download</span> CSV
+        </button>
+      </div>
+
+      <div class="map-wrap" id="map-wrap">
+        <svg id="map" role="img" aria-label="Map of US counties"></svg>
+        <div class="loading" id="loading">
+          <div class="spinner"></div>
+          <p>Loading county data…</p>
+        </div>
+      </div>
+
+      <div class="legend" id="legend" hidden></div>
+
+      <div class="zoom-controls">
+        <button class="icon-btn" id="zoom-in" aria-label="Zoom in">+</button>
+        <button class="icon-btn" id="zoom-out" aria-label="Zoom out">−</button>
+        <button class="icon-btn" id="zoom-reset" aria-label="Reset zoom">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M20 15v5h-5M4 4l6 6M20 20l-6-6" /></svg>
+        </button>
+      </div>
+
+      <aside class="results" id="results" hidden>
+        <div class="panel-head">
+          <h2>Matching counties</h2>
+          <button class="icon-btn" id="results-close" aria-label="Close results">✕</button>
+        </div>
+        <input type="search" id="results-search" placeholder="Search counties…" />
+        <ol class="results-list" id="results-list"></ol>
+        <p class="results-more" id="results-more"></p>
+      </aside>
+
+      <aside class="detail" id="detail" hidden aria-live="polite"></aside>
+    </main>
+  </div>
+
+  <div class="tooltip" id="tooltip" role="tooltip" hidden></div>
+  <div class="toast" id="toast" role="status" hidden></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/topojson-client@3.1.0/dist/topojson-client.min.js"></script>
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
