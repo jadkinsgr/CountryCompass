@@ -1,6 +1,6 @@
 # Country Compass by The Data Lab
 
-A practice project that builds a "find where to live" county explorer. It shows an interactive map of all 3,142 US counties with about 40 filters for cost of living, demographics, crime, weather, laws, the economy, health and natural hazards. The data is real and comes from public sources.
+A practice project that builds a "find where to live" county explorer. It shows an interactive map of all 3,142 US counties with about 40 filters for cost of living, demographics, crime, weather, laws, politics, the economy, health and natural hazards. The data is real and comes from public sources.
 
 Vanilla HTML/CSS/JS with [D3](https://d3js.org) and [us-atlas](https://github.com/topojson/us-atlas) county shapes. There is no build step.
 
@@ -70,7 +70,7 @@ The script prints a coverage report for each metric. No API keys are needed: it 
 
 | Metrics | Source |
 |---|---|
-| Rent, home value, age, education, household size, foreign-born, veterans, commute, employment, unemployment, poverty, income, homeownership, vacant units, population | Census ACS 5-year detailed tables (table-based summary file) |
+| Rent, home value, age, education, household size, veterans, commute, employment, unemployment, poverty, income, homeownership, vacant units, population | Census ACS 5-year detailed tables (table-based summary file) |
 | Land area (for density), county names | Census Gazetteer 2020 |
 | Obesity, uninsured, smoking, excessive drinking, alcohol-impaired driving deaths, exercise access, school test scores | County Health Rankings 2024 |
 | Violent crime | County Health Rankings 2022 (FBI UCR) |
@@ -79,10 +79,12 @@ The script prints a coverage report for each metric. No API keys are needed: it 
 | Earthquake, hurricane, tornado, wildfire and drought risk | FEMA National Risk Index |
 | Coastline | Census coastline counties list (2016); Great Lakes shoreline counties (NOAA definition, hand-maintained in `build_data.py`) |
 | Tax burden, cigarette tax, cannabis, abortion, gun carry | `data/state_policies.csv` (hand-maintained) |
+| Political lean (2024 presidential margin) | [tonmcg/US_County_Level_Election_Results_08-24](https://github.com/tonmcg/US_County_Level_Election_Results_08-24) |
 
 ### Caveats
 
 - **State policy values** (`state_policies.csv`) were entered by hand. Tax burden is approximately the Tax Foundation's state + local figure. Laws change often, especially abortion, so check them before relying on them.
 - **Connecticut:** the map geometry (2017) uses CT's 8 old counties, while newer Census, FEMA and County Health Rankings data use its 9 planning regions. Each old county borrows rates from the region that holds most of its population, and absolute counts (population, density, vacant units, establishments) are left blank. **Valdez-Cordova, AK** (split in 2019) is handled the same way. The detail panel flags these counties.
+- **Political lean in Alaska:** Alaska reports votes by state house district, not borough, so every Alaska borough shows the statewide 2024 margin.
 - **Not yet available:** humidity, sunshine, a mountains flag, "near a major airport" and the per-type crime breakdown. None of these has a free, keyless county-level source wired up yet.
 - **Missing data:** while a filter is set, counties with no data for that metric are excluded. The `?` help icon on a filter shows its coverage.

@@ -279,7 +279,7 @@ svg { stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; 
 .legend-title { font-weight: 600; color: var(--text); margin-bottom: 6px; }
 .legend-bar { display: flex; height: 10px; border-radius: 3px; overflow: hidden; }
 .legend-bar span { flex: 1; }
-.legend-ticks { display: flex; justify-content: space-between; margin-top: 4px; font-variant-numeric: tabular-nums; }
+.legend-ticks { display: flex; justify-content: space-between; gap: 12px; margin-top: 4px; font-variant-numeric: tabular-nums; }
 .legend-keys { display: flex; gap: 12px; margin-top: 8px; }
 .legend-keys i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 4px; vertical-align: -1px; }
 

@@ -17,6 +17,8 @@ export const FORMATS = {
   min: (v) => v.toFixed(1) + " min",
   inch: (v) => Math.round(v) + " in",
   rate: (v) => v.toFixed(1),
+  // vote margin in points: positive = Republican, negative = Democratic
+  lean: (v) => (Math.abs(v) < 0.5 ? "Even" : (v > 0 ? "R+" : "D+") + Math.round(Math.abs(v))),
 };
 
 export const GROUPS = [
@@ -25,6 +27,7 @@ export const GROUPS = [
   { id: "crime", label: "Crime", icon: "🛡️", note: "Per-type breakdown (burglary, robbery…) not yet available." },
   { id: "weather", label: "Terrain & Weather", icon: "⛰️", note: "Humidity, sunshine and mountains not yet available." },
   { id: "laws", label: "Laws & Rights", icon: "⚖️" },
+  { id: "politics", label: "Politics", icon: "🗳️" },
   { id: "economy", label: "Economy", icon: "📈" },
   { id: "health", label: "Health", icon: "❤️" },
   { id: "hazards", label: "Natural Hazards", icon: "🌪️" },
@@ -46,7 +49,6 @@ export const FILTERS = [
   { id: "median_age", group: "demo", type: "range", label: "Median age", fmt: "dec1" },
   { id: "test_scores", group: "demo", type: "range", label: "School test scores", unit: " grades vs US", fmt: "signed", help: "Avg 3rd-grade reading & math, in grade levels relative to the US average" },
   { id: "hh_size", group: "demo", type: "range", label: "Avg household size", fmt: "dec2" },
-  { id: "foreign_born", group: "demo", type: "range", label: "Foreign-born", fmt: "pct" },
   { id: "veterans", group: "demo", type: "range", label: "Veterans", fmt: "pct" },
 
   // Crime
@@ -62,6 +64,9 @@ export const FILTERS = [
   { id: "cannabis", group: "laws", type: "chips", label: "Cannabis", options: ["Recreational", "Medical", "None"], optionLabels: { None: "Not legal" } },
   { id: "abortion", group: "laws", type: "chips", label: "Abortion", options: ["Legal", "Restricted", "Banned"] },
   { id: "carry", group: "laws", type: "chips", label: "Concealed carry", options: ["Permitless", "Permit required"] },
+
+  // Politics (diverging: colored liberal blue -> conservative red around 0)
+  { id: "lean", group: "politics", type: "range", label: "Political lean", fmt: "lean", diverging: true, help: "2024 presidential vote margin (D+ = liberal, R+ = conservative). Alaska uses the statewide result." },
 
   // Economy
   { id: "hh_income", group: "economy", type: "range", label: "Median household income", fmt: "money", key: true },

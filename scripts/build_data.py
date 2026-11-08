@@ -39,7 +39,11 @@ GAZ_URL = "https://www2.census.gov/geo/docs/maps-data/data/gazetteer/2020_Gazett
 CHR_URL = "https://www.countyhealthrankings.org/sites/default/files/media/document/analytic_data{y}.csv"
 CBP_URL = "https://www2.census.gov/programs-surveys/cbp/datasets/{y}/cbp{yy}co.zip"
 COAST_URL = "https://www2.census.gov/library/stories/2018/08/coastline-counties-list.xlsx"
-CLIMDIV_DIR = "https://www.ncei.noaa.gov/monitoring-content/data/us/climdiv/monthly/current/"
+ELECTION_URL = (
+    "https://raw.githubusercontent.com/tonmcg/US_County_Level_Election_Results_08-24/"
+    "master/2024_US_County_Level_Presidential_Results.csv"
+)
+CLIMDIV_DIR ="https://www.ncei.noaa.gov/monitoring-content/data/us/climdiv/monthly/current/"
 NRI_URL = (
     "https://services.arcgis.com/XG15cJAlne2vxtgt/arcgis/rest/services/"
     "National_Risk_Index_Counties/FeatureServer/0/query"
@@ -84,7 +88,6 @@ ACS_TABLES = {
     "b25077": ["E001"],                              # median home value
     "b15003": ["E001", "E022", "E023", "E024", "E025"],  # education 25+
     "b25010": ["E001"],                              # avg household size
-    "b05002": ["E001", "E013"],                      # nativity: foreign born
     "b21001": ["E001", "E002"],                      # veteran status
     "b08013": ["E001"],                              # aggregate travel time
     "b08303": ["E001"],                              # commuters (not WFH)
@@ -201,7 +204,6 @@ def load_acs(refresh: bool) -> tuple[int, dict]:
             "home_value": g("b25077", "E001"),
             "ba_plus": ratio(sum(x or 0 for x in ba), g("b15003", "E001")),
             "hh_size": g("b25010", "E001"),
-            "foreign_born": ratio(g("b05002", "E013"), g("b05002", "E001")),
             "veterans": ratio(g("b21001", "E002"), g("b21001", "E001")),
             "commute": ratio(g("b08013", "E001"), g("b08303", "E001"), 1),
             "employment_rate": ratio(g("b23025", "E004"), g("b23025", "E001")),
@@ -324,6 +326,26 @@ def load_coast(refresh: bool) -> dict:
     return out
 
 
+def load_election(refresh: bool) -> dict:
+    """2024 presidential margin in points: positive = Republican, negative = Democratic.
+    Alaska reports by state house district, so every borough gets the statewide margin."""
+    p = fetch(ELECTION_URL, CACHE / "pres2024.csv", refresh)
+    out, ak = {}, [0, 0, 0]
+    with open(p, newline="", encoding="utf-8") as f:
+        for row in csv.DictReader(f):
+            fips = row["county_fips"].zfill(5)
+            gop, dem, tot = num(row["votes_gop"]), num(row["votes_dem"]), num(row["total_votes"])
+            if not tot:
+                continue
+            if fips[:2] == "02":
+                ak = [ak[0] + gop, ak[1] + dem, ak[2] + tot]
+            else:
+                out[fips] = {"lean": (gop - dem) / tot * 100}
+    out["02"] = {"lean": (ak[0] - ak[1]) / ak[2] * 100} if ak[2] else None
+    log(f"2024 presidential results: {len(out) - 1} counties (+ Alaska statewide)")
+    return out
+
+
 def load_climate(refresh: bool) -> dict:
     """1991-2020 normals: July & January mean daily high (F), annual precipitation (in)."""
     listing = requests.get(CLIMDIV_DIR, headers=UA, timeout=60).text
@@ -423,7 +445,7 @@ ROUNDING = {
     "pop": 0, "density": 1, "rent": 0, "home_value": -3, "income_pc": -2, "hh_income": -2,
     "vacant_units": 0, "establishments": 0, "median_age": 1, "hh_size": 2, "commute": 1,
     "test_scores": 2, "precip": 1, "summer_high": 1, "winter_high": 1, "tax_burden": 1,
-    "cig_tax": 2, "violent_crime": 2,
+    "cig_tax": 2, "violent_crime": 2, "lean": 1,
 }
 
 
@@ -452,6 +474,7 @@ def main() -> None:
     chr_crime, _ = load_chr(2022, {"violent_crime": "v043_rawvalue"}, args.refresh)
     cbp_year, cbp = load_cbp(args.refresh)
     coast = load_coast(args.refresh)
+    election = load_election(args.refresh)
     climate = load_climate(args.refresh)
     nri = load_nri(args.refresh)
     policies = load_policies()
@@ -485,6 +508,7 @@ def main() -> None:
         rec.update(lookup(climate, fips) or {})
         rec.update(lookup(nri, fips) or {})
         rec["coast"] = coast.get(fips, "None")
+        rec.update((election.get("02") if fips[:2] == "02" else lookup(election, fips)) or {})
         rec.update(policies.get(fips[:2], {}))
 
         if fips not in acs and fips in {**CT_REGION_FOR, **AK_FALLBACK}:
@@ -520,6 +544,7 @@ def main() -> None:
             "climate": "NOAA nClimDiv county normals 1991-2020",
             "hazards": "FEMA National Risk Index",
             "coast": "Census coastline counties list (2016); Great Lakes shoreline counties (NOAA definition)",
+            "election": "2024 presidential results by county (tonmcg/US_County_Level_Election_Results_08-24); Alaska statewide",
             "gazetteer": "Census Gazetteer 2020",
             "policies": "data/state_policies.csv (hand-maintained)",
         },

@@ -5,6 +5,9 @@ import { createMap } from "./map.js";
 
 const $ = (id) => document.getElementById(id);
 const RAMP = ["#d4f1ec", "#a6e2d9", "#72cfc1", "#3fb8a8", "#16998b", "#0b776d", "#06544e"];
+// diverging metrics (political lean) use fixed, symmetric breaks around 0
+const DIVERGING_RAMP = ["#1f4e9c", "#4a7fcf", "#9bbbe6", "#c9c3d6", "#eba3a3", "#d65a5a", "#a51f24"];
+const DIVERGING_BREAKS = [-30, -15, -5, 5, 15, 30];
 const RESULTS_LIMIT = 300;
 const TOOLTIP_KEYS = { rent: ["rent", "hh_income", "summer_high", "winter_high"], buy: ["home_value", "hh_income", "summer_high", "winter_high"] };
 
@@ -119,7 +122,9 @@ function colorScale() {
   const id = state.colorBy;
   if (!scaleCache[id]) {
     const vals = data.records.map((r) => r[id]).filter((v) => typeof v === "number");
-    scaleCache[id] = d3.scaleQuantile().domain(vals).range(RAMP);
+    scaleCache[id] = filterById[id].diverging
+      ? d3.scaleThreshold().domain(DIVERGING_BREAKS).range(DIVERGING_RAMP)
+      : d3.scaleQuantile().domain(vals).range(RAMP);
   }
   const scale = scaleCache[id];
   return (rec) => (typeof rec[id] === "number" ? scale(rec[id]) : null);
@@ -135,12 +140,21 @@ function renderLegend() {
     return;
   }
   const f = filterById[state.colorBy];
-  const q = scaleCache[f.id].quantiles();
   const fmt = (v) => formatValue(f, v);
-  const vals = data.records.map((r) => r[f.id]).filter((v) => typeof v === "number");
+  let ramp, ticks;
+  if (f.diverging) {
+    ramp = DIVERGING_RAMP;
+    const b = DIVERGING_BREAKS;
+    ticks = [`Liberal (${fmt(b[0])}+)`, fmt(0), `Conservative (${fmt(b[b.length - 1])}+)`];
+  } else {
+    ramp = RAMP;
+    const q = scaleCache[f.id].quantiles();
+    const vals = data.records.map((r) => r[f.id]).filter((v) => typeof v === "number");
+    ticks = [fmt(d3.min(vals)), fmt(q[Math.floor(q.length / 2)]), fmt(d3.max(vals))];
+  }
   el.innerHTML = `<div class="legend-title">${f.label}</div>
-    <div class="legend-bar">${RAMP.map((c) => `<span style="background:${c}"></span>`).join("")}</div>
-    <div class="legend-ticks"><span>${fmt(d3.min(vals))}</span><span>${fmt(q[Math.floor(q.length / 2)])}</span><span>${fmt(d3.max(vals))}</span></div>
+    <div class="legend-bar">${ramp.map((c) => `<span style="background:${c}"></span>`).join("")}</div>
+    <div class="legend-ticks">${ticks.map((t) => `<span>${t}</span>`).join("")}</div>
     <div class="legend-keys"><span><i style="background:var(--nomatch)"></i>Filtered out</span><span><i style="background:var(--nodata)"></i>No data</span></div>`;
 }
 
