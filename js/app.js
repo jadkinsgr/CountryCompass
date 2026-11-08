@@ -225,12 +225,12 @@ function renderDetail(fips) {
 // ---------------------------------------------------------------- favorites
 
 function loadFavorites() {
-  try { return new Set(JSON.parse(localStorage.getItem("movemap:favorites") || "[]")); }
+  try { return new Set(JSON.parse(localStorage.getItem("compass:favorites") || "[]")); }
   catch { return new Set(); }
 }
 function toggleFavorite(fips) {
   favorites.has(fips) ? favorites.delete(fips) : favorites.add(fips);
-  try { localStorage.setItem("movemap:favorites", JSON.stringify([...favorites])); } catch { /* storage unavailable */ }
+  try { localStorage.setItem("compass:favorites", JSON.stringify([...favorites])); } catch { /* storage unavailable */ }
   map.setFavorites(favorites);
   update();
 }
@@ -373,14 +373,14 @@ function wireUI() {
 
 function initTheme() {
   let saved = null;
-  try { saved = localStorage.getItem("movemap:theme"); } catch { /* ignore */ }
+  try { saved = localStorage.getItem("compass:theme"); } catch { /* ignore */ }
   if (saved) document.documentElement.dataset.theme = saved;
   $("theme-btn").addEventListener("click", () => {
     const cur = document.documentElement.dataset.theme
       || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
     const next = cur === "dark" ? "light" : "dark";
     document.documentElement.dataset.theme = next;
-    try { localStorage.setItem("movemap:theme", next); } catch { /* ignore */ }
+    try { localStorage.setItem("compass:theme", next); } catch { /* ignore */ }
   });
 }
 

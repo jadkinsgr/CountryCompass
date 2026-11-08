@@ -127,7 +127,8 @@ svg { stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; 
 }
 .brand { display: flex; align-items: center; gap: 8px; text-decoration: none; color: var(--text); font-weight: 700; font-size: 18px; letter-spacing: -.01em; }
 .brand svg { width: 24px; height: 24px; fill: var(--accent); stroke: none; }
-.tagline { color: var(--text-3); font-size: 13px; padding-left: 12px; border-left: 1px solid var(--border); }
+.tagline { color: var(--text-3); font-size: 13px; padding-left: 12px; border-left: 1px solid var(--border); text-decoration: none; }
+.tagline:hover { color: var(--accent); }
 .topbar-actions { margin-left: auto; display: flex; align-items: center; gap: 8px; }
 
 .toggle { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; user-select: none; }

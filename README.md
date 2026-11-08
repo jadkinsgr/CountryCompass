@@ -1,6 +1,6 @@
-# MoveMap
+# Country Compass by The Data Lab
 
-A practice project that recreates a "find where to live" county explorer. It shows an interactive map of all 3,142 US counties with about 40 filters for cost of living, demographics, crime, weather, laws, the economy, health and natural hazards. The data is real and comes from public sources.
+A practice project that builds a "find where to live" county explorer. It shows an interactive map of all 3,142 US counties with about 40 filters for cost of living, demographics, crime, weather, laws, the economy, health and natural hazards. The data is real and comes from public sources.
 
 Vanilla HTML/CSS/JS with [D3](https://d3js.org) and [us-atlas](https://github.com/topojson/us-atlas) county shapes. There is no build step.
 
