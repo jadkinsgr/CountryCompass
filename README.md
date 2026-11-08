@@ -77,7 +77,7 @@ The script prints a coverage report for each metric. No API keys are needed: it 
 | Employer establishments | Census County Business Patterns |
 | Summer and winter highs, precipitation (1991–2020 normals) | NOAA nClimDiv county data |
 | Earthquake, hurricane, tornado, wildfire and drought risk | FEMA National Risk Index |
-| Coastline | Census coastline counties list (2016) |
+| Coastline | Census coastline counties list (2016); Great Lakes shoreline counties (NOAA definition, hand-maintained in `build_data.py`) |
 | Tax burden, cigarette tax, cannabis, abortion, gun carry | `data/state_policies.csv` (hand-maintained) |
 
 ### Caveats

@@ -280,6 +280,35 @@ def load_cbp(refresh: bool) -> tuple[int, dict]:
     raise RuntimeError("no CBP file found")
 
 
+# Counties whose shoreline touches a Great Lake or its connecting waters
+# (St. Marys, St. Clair and Detroit rivers, Lake St. Clair, Niagara and
+# St. Lawrence rivers). The Census coastline list covers only ocean/Gulf
+# shores, so this set is maintained by hand (it matches NOAA's Great Lakes
+# shoreline-county definition).
+GREAT_LAKES_FIPS = {
+    # Minnesota (Superior)
+    "27031", "27075", "27137",
+    # Wisconsin (Superior, Michigan)
+    "55003", "55007", "55009", "55029", "55031", "55051", "55059", "55061",
+    "55071", "55075", "55079", "55083", "55089", "55101", "55117",
+    # Illinois / Indiana (Michigan)
+    "17031", "17097", "18089", "18091", "18127",
+    # Michigan (Superior, Michigan, Huron, St. Clair, Erie)
+    "26001", "26003", "26005", "26007", "26009", "26011", "26013", "26017",
+    "26019", "26021", "26029", "26031", "26033", "26041", "26047", "26053",
+    "26055", "26061", "26063", "26069", "26083", "26089", "26095", "26097",
+    "26099", "26101", "26103", "26105", "26109", "26115", "26121", "26127",
+    "26131", "26139", "26141", "26147", "26151", "26153", "26157", "26159",
+    "26163",
+    # Ohio / Pennsylvania (Erie)
+    "39007", "39035", "39043", "39085", "39093", "39095", "39123", "39143",
+    "42049",
+    # New York (Erie, Niagara River, Ontario, St. Lawrence River)
+    "36011", "36013", "36029", "36045", "36055", "36063", "36073", "36075",
+    "36089", "36117",
+}
+
+
 def load_coast(refresh: bool) -> dict:
     import openpyxl
 
@@ -288,9 +317,10 @@ def load_coast(refresh: bool) -> dict:
     out = {}
     for row in wb.active.iter_rows(values_only=True):
         if row and row[0] and re.fullmatch(r"\d{5}", str(row[0])):
-            region = (row[5] or "").strip()
-            out[str(row[0])] = "Great Lakes" if "Great Lakes" in region else "Ocean"
-    log(f"Coastline counties: {len(out)}")
+            out[str(row[0])] = "Ocean"
+    for fips in GREAT_LAKES_FIPS:
+        out.setdefault(fips, "Great Lakes")
+    log(f"Coastline counties: {len(out)} ({len(GREAT_LAKES_FIPS)} Great Lakes)")
     return out
 
 
@@ -489,7 +519,7 @@ def main() -> None:
             "cbp": f"County Business Patterns {cbp_year}",
             "climate": "NOAA nClimDiv county normals 1991-2020",
             "hazards": "FEMA National Risk Index",
-            "coast": "Census coastline counties list (2016)",
+            "coast": "Census coastline counties list (2016); Great Lakes shoreline counties (NOAA definition)",
             "gazetteer": "Census Gazetteer 2020",
             "policies": "data/state_policies.csv (hand-maintained)",
         },
