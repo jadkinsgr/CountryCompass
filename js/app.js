@@ -200,6 +200,16 @@ function selectCounty(fips, { zoom = false } = {}) {
   writeURL();
 }
 
+// Zillow's free-text search URL, e.g. https://www.zillow.com/homes/Sonoma-County,-CA_rb/
+// Names already carry their suffix (County, Parish, Borough, city), so they pass through as-is.
+function zillowURL(rec) {
+  const slug = `${rec.name}, ${rec.state}`
+    .normalize("NFD").replace(/[̀-ͯ]/g, "")
+    .replace(/[^A-Za-z0-9.,' -]/g, "")
+    .trim().replace(/\s+/g, "-");
+  return `https://www.zillow.com/homes/${slug}_rb/`;
+}
+
 function renderDetail(fips) {
   const rec = data.byFips.get(fips);
   const el = $("detail");
@@ -225,6 +235,7 @@ function renderDetail(fips) {
       <div class="detail-actions">
         <button class="btn fav-btn" id="fav-btn" aria-pressed="${isFav}">${isFav ? "♥ Favorited" : "♡ Favorite"}</button>
         <button class="btn" id="zoom-county">Zoom to county</button>
+        <a class="btn primary" href="${zillowURL(rec)}" target="_blank" rel="noopener" title="Search homes for sale in ${esc(rec.name)}, ${esc(rec.state)} on Zillow">Homes on Zillow <span aria-hidden="true">↗</span></a>
       </div>
     </div>
     <div class="detail-body">${sections}
