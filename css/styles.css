@@ -144,13 +144,45 @@ svg { stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; 
 .coffee-pill:active { transform: translateY(0); box-shadow: 0 4px 14px rgb(20 165 147 / 40%); }
 .coffee-pill:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--surface), 0 0 0 4px var(--accent); }
 .coffee-icon { display: grid; place-items: center; }
-.coffee-icon svg { width: 16px; height: 16px; stroke: currentColor; stroke-width: 2.2; overflow: visible; }
-.coffee-icon .steam { animation: coffee-steam 1.8s ease-in-out infinite; }
+.coffee-icon svg {
+  width: 16px; height: 16px; stroke: currentColor; stroke-width: 2.2; overflow: visible;
+  transform-origin: 50% 65%;
+  /* idle: a quick hop-and-spin every few seconds to catch the eye */
+  animation: coffee-hop 7s cubic-bezier(.3, .7, .4, 1) 1.5s infinite;
+}
+.coffee-icon .steam { transform-box: fill-box; transform-origin: 50% 100%; animation: coffee-steam 1.8s ease-in-out infinite; }
+.coffee-icon .steam-2 { animation-delay: .35s; }
+/* hover: hop + spin once, then the steam puffs up */
+.coffee-pill:hover .coffee-icon svg, .coffee-pill:focus-visible .coffee-icon svg { animation: coffee-hop-once .8s cubic-bezier(.3, .7, .4, 1) 1; }
+.coffee-pill:hover .coffee-icon .steam, .coffee-pill:focus-visible .coffee-icon .steam { animation: coffee-puff 1.1s ease-out .6s infinite; }
+.coffee-pill:hover .coffee-icon .steam-2, .coffee-pill:focus-visible .coffee-icon .steam-2 { animation-delay: .85s; }
 .coffee-arrow { display: inline-block; transition: transform .2s; }
 .coffee-pill:hover .coffee-arrow { transform: translateX(3px); }
+
+@keyframes coffee-hop-once {
+  0%   { transform: translateY(0) rotate(0) scale(1); }
+  15%  { transform: translateY(1px) scale(1.12, .86); }           /* crouch */
+  45%  { transform: translateY(-7px) rotate(200deg) scale(1); }   /* airborne spin */
+  75%  { transform: translateY(0) rotate(360deg) scale(1.14, .86); } /* land + squash */
+  100% { transform: translateY(0) rotate(360deg) scale(1); }
+}
+@keyframes coffee-hop {
+  0%   { transform: translateY(0) rotate(0) scale(1); }
+  2%   { transform: translateY(1px) scale(1.12, .86); }
+  6%   { transform: translateY(-7px) rotate(200deg) scale(1); }
+  10%  { transform: translateY(0) rotate(360deg) scale(1.14, .86); }
+  13%, 100% { transform: translateY(0) rotate(360deg) scale(1); }
+}
 @keyframes coffee-steam { 0%, 100% { transform: translateY(0); opacity: .55; } 50% { transform: translateY(-1.5px); opacity: 1; } }
+@keyframes coffee-puff {
+  0%   { transform: translateY(1px) scaleY(.6); opacity: 0; }
+  35%  { opacity: 1; }
+  100% { transform: translateY(-5px) scaleY(1.3); opacity: 0; }
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .coffee-icon .steam { animation: none; }
+  .coffee-icon svg, .coffee-icon .steam,
+  .coffee-pill:hover .coffee-icon svg, .coffee-pill:hover .coffee-icon .steam { animation: none; }
   .coffee-pill, .coffee-arrow { transition: none; }
 }
 @media (max-width: 860px) { .coffee-pill { width: 34px; padding: 0; justify-content: center; } }
