@@ -164,7 +164,7 @@ function rangeFilter(f, domain, total, state, onChange) {
 
   const root = h("div", { class: "filter", "data-id": f.id }, [
     h("div", { class: "filter-head" }, [
-      h("span", { class: "filter-label" }, [f.label, helpText ? h("span", { class: "help", title: helpText }, "?") : ""]),
+      h("span", { class: "filter-label" }, [f.label, helpText ? h("button", { class: "help", type: "button", "data-tip": helpText, "aria-label": `About ${f.label}: ${helpText}` }, "?") : ""]),
       h("span", {}, [valueEl, clear]),
     ]),
     hist,
